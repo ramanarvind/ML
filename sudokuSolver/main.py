@@ -232,56 +232,6 @@ for y in range(0,ROW_DIM):
                 numKnnInputs += 1
                 cell.astype('int8').tofile(fdDumpKnnInput)        
         
-        """
-        # Now using center-of-mass place it in a 28x28 dimension space as done 
-        # in the MINST dataset
-        contours, hierarchy = cv2.findContours(cell, cv2.RETR_EXTERNAL, 2)
-        if(len(contours) > 0):
-            M = cv2.moments(contours[0])
-            if (M['m00'] > 0):
-                cx = int(M['m10'] / M['m00'])
-                cy = int(M['m01'] / M['m00'])            
-                #cv2.circle(cell, (cx, cy), 3, (127, 127, 127), -1)
-                padTop = int((KNN_DIM/2)-cy)
-                padBottom = int(KNN_DIM-((KNN_DIM/2-cy)+DIGIT_DIM))
-                padLeft = int((KNN_DIM/2)-cx)
-                padRight = int(KNN_DIM-((KNN_DIM/2-cx)+DIGIT_DIM))
-                
-                if(padTop < 0):
-                    padBottom += padTop
-                    padTop = 0
-                elif(padBottom < 0):
-                    padTop += padBottom
-                    padBottom = 0
-
-                if(padLeft < 0):
-                    padRight += padLeft
-                    padLeft = 0
-                elif(padRight < 0):
-                    padLeft += padRight
-                    padRight = 0
-
-                # Pad the image with black to make it KNN_DIM x KNN_DIM size                
-                cell = cv2.copyMakeBorder(cell, padTop, padBottom, padLeft, padRight, cv2.BORDER_CONSTANT, 0)
-                
-                
-                cv2.namedWindow('Sudoku',cv2.WINDOW_NORMAL)
-                cv2.imshow('Sudoku', cell) 
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-                
-                
-                # Dump cells to a file to serve as test vectors for digit recognizer
-                if(DUMP_KNN_INPUT == 1):
-                    numKnnInputs += 1
-                    cell.astype('int8').tofile(fdDumpKnnInput)
-                
-                # Convert the cell to float 32 type for digit recognizer           
-                cellf32 = np.array(cell).astype(np.float32).reshape(1, KNN_DIM*KNN_DIM)
-                ret, result, neighbours, dist = dr.test(cellf32)
-                board[y][x] = int(result[0])
-                
-        """
 print("Printing the board")
 for row in board:
     print(row)
@@ -291,7 +241,7 @@ if(sudoku.solveSudoku(board)):
     for row in board:
         print(row)
 else:
-    print("Sodoku was not solved")
+    print("Sodoku is not solvable")
 
 if(DUMP_KNN_INPUT == 1):
     fdDumpKnnInput.seek(4)
@@ -302,7 +252,7 @@ if(DUMP_KNN_INPUT == 1):
     # Sudoku - 2
     # digits = [6, 2, 7, 1, 8, 3, 7, 1, 7, 8, 4, 6, 9, 2, 2, 8, 3, 1, 6, 6, 1, 3]
     # Sudoku - 3
-    digits = [6, 1, 4, 7, 1, 6, 8, 6, 5, 9, 4, 2, 8, 6, 7, 5, 3, 9, 4, 2, 3, 9]
+    #digits = [6, 1, 4, 7, 1, 6, 8, 6, 5, 9, 4, 2, 8, 6, 7, 5, 3, 9, 4, 2, 3, 9]
     # Write labels
     fdDumpKnnInput = open(KNN_DIGITS_LBL, 'wb')
     fdDumpKnnInput.write(struct.pack('i',2049))
