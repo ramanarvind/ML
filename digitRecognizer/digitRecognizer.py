@@ -14,32 +14,10 @@ import numpy as np
 import cv2 as opencv
 
 class digitRecognizer:
-    def __init__(self, algo: str ="knn", relativePath = ""):
+    def __init__(self, algo: str ="knn"):
         self.algo= algo
         if(self.algo == "knn"):
             self.knn = opencv.ml.KNearest_create()
-            fpTrain = open(relativePath+"./train/train-images.idx3-ubyte", "rb")
-            magicNum = int.from_bytes(fpTrain.read(4), byteorder='big')
-            assert(magicNum == 2051)
-            numTrainImgs = int.from_bytes(fpTrain.read(4), byteorder='big')
-            numTrainRows = int.from_bytes(fpTrain.read(4), byteorder='big')
-            numTrainCols = int.from_bytes(fpTrain.read(4), byteorder='big')
-            
-            fpTrainLabel = open(relativePath+"./train/train-labels.idx1-ubyte", "rb")
-            magicNum = int.from_bytes(fpTrainLabel.read(4), byteorder='big')
-            assert(magicNum == 2049)
-            numTrainLabels = int.from_bytes(fpTrainLabel.read(4), byteorder='big')
-            
-            trainVecs = np.frombuffer(fpTrain.read(numTrainImgs*numTrainRows*numTrainCols), dtype='ubyte')
-            trainVecs = opencv.adaptiveThreshold(trainVecs, 255, opencv.ADAPTIVE_THRESH_MEAN_C, opencv.THRESH_BINARY_INV, 9, 2);
-            trainVecs = np.array(trainVecs).astype(np.float32)
-            trainVecs = trainVecs.reshape(numTrainImgs, numTrainRows*numTrainCols)
-            
-            trainLabels = np.frombuffer(fpTrainLabel.read(numTrainLabels), dtype='ubyte')
-            trainLabels = np.array(trainLabels).astype(np.float32)
-            trainLabels = trainLabels.reshape(numTrainLabels, 1)
-            self.train(trainVecs, trainLabels)
-
 
     def knn_train(self, trainVecs, trainLabels):
         self.knn.train(trainVecs, opencv.ml.ROW_SAMPLE, trainLabels)

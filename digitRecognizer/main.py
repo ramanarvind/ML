@@ -12,9 +12,31 @@ import matplotlib.pyplot as plt
 import cv2 as opencv
 import digitRecognizer as DR
 
-
-# Train the model
+"""
+Train the digit recognizer model
+"""
+# Read the digit images
+fpTrain = open("./train/train-images.idx3-ubyte", "rb")
+magicNum = int.from_bytes(fpTrain.read(4), byteorder='big')
+assert(magicNum == 2051)
+numTrainImgs = int.from_bytes(fpTrain.read(4), byteorder='big')
+numTrainRows = int.from_bytes(fpTrain.read(4), byteorder='big')
+numTrainCols = int.from_bytes(fpTrain.read(4), byteorder='big')
+trainVecs = np.frombuffer(fpTrain.read(numTrainImgs*numTrainRows*numTrainCols), dtype='ubyte')
+trainVecs = opencv.adaptiveThreshold(trainVecs, 255, opencv.ADAPTIVE_THRESH_MEAN_C, opencv.THRESH_BINARY_INV, 9, 2);
+trainVecs = np.array(trainVecs).astype(np.float32)
+trainVecs = trainVecs.reshape(numTrainImgs, numTrainRows*numTrainCols)
+# Read the digit labels
+fpTrainLabel = open("./train/train-labels.idx1-ubyte", "rb")
+magicNum = int.from_bytes(fpTrainLabel.read(4), byteorder='big')
+assert(magicNum == 2049)
+numTrainLabels = int.from_bytes(fpTrainLabel.read(4), byteorder='big')
+trainLabels = np.frombuffer(fpTrainLabel.read(numTrainLabels), dtype='ubyte')
+trainLabels = np.array(trainLabels).astype(np.float32)
+trainLabels = trainLabels.reshape(numTrainLabels, 1)
+# Create an instance of the digit recognizer class and train it
 dr = DR.digitRecognizer()
+dr.train(trainVecs, trainLabels)
 
 # Test the model
 # Read the header information from test image
