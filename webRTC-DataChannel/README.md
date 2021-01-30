@@ -11,4 +11,4 @@ Once installed, start the Node.js server by calling the following command from y
 The app will create a random room ID and add that ID to the URL. Open the URL from the address bar in a new browser tab or window. The demo has been tested to work on Chrome, Edge and Firefox. It is possible for the two peers to be on two completely different browsers.
 
 ## To Do
-- [] Host the Node.js server on a publically accessible server and test
+- [ ] Host the Node.js server on a publically accessible server and test
